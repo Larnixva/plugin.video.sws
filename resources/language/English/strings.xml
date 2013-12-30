@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<strings>
+  <string id="30001">Please enter email-adress:</string>
+  <string id="30002">Please enter password:</string>
+  <string id="30003">Wrong e-mail or password!</string>
+  <string id="30101">E-mail</string>
+  <string id="30102">Password</string>
+</strings>
