@@ -18,10 +18,12 @@ import requests
 addon_handle = int(sys.argv[1])
 addon = xbmcaddon.Addon(id='plugin.video.sws')
 addondir = xbmc.translatePath(addon.getAddonInfo('profile'))
+xbox = xbmc.getCondVisibility("System.Platform.xbox")
 
 baseurl					=				'https://www.stanwinstonschool.com/'
 loginurl				= baseurl + 	'users/sign_in'
 streamlisturl			= baseurl + 	'account/streams'
+blogurl					= baseurl + 	'blog'
 
 loc = addon.getLocalizedString
 setting = addon.getSetting
@@ -116,7 +118,41 @@ def index(cookies):
 	# auth stuff
 	cookies = auth(cookies)
 	writeCookies(cookies)
-	# print tuts
+
+	li = xbmcgui.ListItem('Blogvideos####', iconImage='defaultfolder.png')
+	params = {'mode' : 'showblogvideos'}
+	xbmcplugin.addDirectoryItem(handle=addon_handle, url=makeUrl(params), listitem=li, isFolder=True)
+
+	li = xbmcgui.ListItem('Tutorials####', iconImage='defaultfolder.png')
+	params = {'mode' : 'showtuts'}
+	xbmcplugin.addDirectoryItem(handle=addon_handle, url=makeUrl(params), listitem=li, isFolder=True)
+
+	xbmcplugin.endOfDirectory(addon_handle)
+	return cookies
+
+def showBlogVideos(cookies, params={}):
+	headers = {'Accept' : 'text/html'}
+	r = requests.get(blogurl, cookies=cookies, headers=headers)		### /?page=xxx
+	soup = BeautifulSoup(r.content)
+	boxes = soup.find_all('iframe')
+	print 'BLALBLALBLDFSDGSDGSGHSGSDFSDFDS------------------------------------------------------'
+	print str(boxes)
+	for box in boxes:
+		src = box['src']
+		print src
+		vid = src.split('/')[-1].split('?')[0]
+		print vid
+		li = xbmcgui.ListItem(vid)
+		li.setInfo('video', {'title' : vid})
+		li.setProperty('isPlayable','true')
+		if xbox==True:
+			params = {'mode' : 'playvideo', 'url' : 'plugin://video/YouTube/?path=/root/video&action=play_video&videoid=' + vid, 'name' : vid}
+		else:
+			params = {'mode' : 'playvideo', 'url' : 'plugin://plugin.video.youtube/?path=/root/video&action=play_video&videoid=' + vid, 'name' : vid}
+		xbmcplugin.addDirectoryItem(handle=addon_handle, url=makeUrl(params), listitem=li)
+	xbmcplugin.endOfDirectory(addon_handle)
+
+def showTuts(cookies, params={}):
 	r = requests.get(streamlisturl, cookies=cookies)
 	soup = BeautifulSoup(r.content)
 	boxes = soup.find_all(attrs={'class' : 'stream_box'})
@@ -124,12 +160,11 @@ def index(cookies):
 		name = box.a.get_text(strip=True)
 		exturl = box.a['href']
 		li = xbmcgui.ListItem(name, iconImage='defaultfolder.png')
-		params = {'mode' : 'showvideos', 'url' : exturl}
+		params = {'mode' : 'showtutvideos', 'url' : exturl}
 		xbmcplugin.addDirectoryItem(handle=addon_handle, url=makeUrl(params), listitem=li, isFolder=True)
 	xbmcplugin.endOfDirectory(addon_handle)
-	return cookies
 
-def showVideos(cookies, params={}):
+def showTutVideos(cookies, params={}):
 	r = requests.get(baseurl + params['url'][1:], cookies=cookies)
 	soup = BeautifulSoup(r.content)
 	scripts = soup.find_all('script')
@@ -174,8 +209,12 @@ if not setting('password'):
 
 if 'mode' in params:
 	cookies = readCookies()
-	if params['mode'] == 'showvideos':
-		showVideos(cookies, params)
+	if params['mode'] == 'showtuts':
+		showTuts(cookies, params)
+	elif params['mode'] == 'showblogvideos':
+		showBlogVideos(cookies, params)
+	if params['mode'] == 'showtutvideos':
+		showTutVideos(cookies, params)
 	elif params['mode'] == 'playvideo':
 		playVideo(params)
 else:
