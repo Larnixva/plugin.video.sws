@@ -1,3 +1,6 @@
+1.0.1
+- [*]   Fixed emailDialog/passwordDialog issue with Frodo
+
 1.0.0
 - [+]   First release version
 

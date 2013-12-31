@@ -29,7 +29,7 @@ setting = addon.getSetting
 params = urlparse.parse_qsl(sys.argv[2][1:])
 params = dict(params)
 
-def displayEmailDialog(start=None):
+def displayEmailDialog(start=''):
 	emailb = xbmc.Keyboard()
 	emailb.setHeading(loc(30001))
 	emailb.setDefault(start)
@@ -38,7 +38,7 @@ def displayEmailDialog(start=None):
 	if emailb.isConfirmed():
 		addon.setSetting('email', emailb.getText())
 
-def displayPasswordDialog(start=None):
+def displayPasswordDialog(start=''):
 	passb = xbmc.Keyboard(heading=loc(30002), hidden=True)
 	passb.setHeading(loc(30002))
 	passb.setDefault(start)
