@@ -3,6 +3,9 @@
   <string id="30001">Please enter email-adress:</string>
   <string id="30002">Please enter password:</string>
   <string id="30003">Wrong e-mail or password!</string>
+  <string id="30004">YouTube videos</string>
+  <string id="30005">Tutorials</string>
+  <string id="30006">Load more…</string>
   <string id="30101">E-mail</string>
   <string id="30102">Password</string>
 </strings>
